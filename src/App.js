@@ -1,17 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import About from './components/About';
 import Navbar from './components/Navbar';
 import TextForm from './components/TextForm';
 import Alert from './components/Alert';
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Routes
-} from "react-router-dom";
 
 
 function App() {
@@ -72,20 +63,9 @@ function App() {
   
   return (
     <>
-
-      <Router>
       <Navbar title='TextUtils' mode={mode} toggleMode={toggleMode} />
       <Alert alert={alert}/>
-        <Routes>
-          {/* good practice to use exact path */}
-          <Route exact path="/" element={
-            <TextForm heading="Enter the text to analyze" myStyle1={myStyle} showAlert={showAlert} />}
-          />
-          <Route exact path="/about" element={
-            <About mode={mode} myStyle={myStyle} />}
-          />
-        </Routes>
-      </Router>
+      <TextForm heading="Enter the text to analyze" myStyle1={myStyle} showAlert={showAlert} />
     </>
   );
 }
