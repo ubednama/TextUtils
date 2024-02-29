@@ -7,9 +7,9 @@ export default function TextForm(props) {
     //wordCount
     
     
-    let words = text.split(/[ ]+/)
+    let words = text.trim().split(/\s+/)
     let wordCount = words.length;
-    if( words[wordCount-1] == '' ) wordCount -= 1;
+    
 
     const handleUpClick = () => {
         if (text.trim() !== "") {
