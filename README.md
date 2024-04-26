@@ -10,7 +10,7 @@ Remove extra spaces from the text.
 React: A JavaScript library for building user interfaces.
 JavaScript: A high-level programming language commonly used for web development.
 ## Demo
-(Demo)["https://ubednama.github.io/text-utils/]
+[Demo]("https://ubednama.github.io/text-utils/)
 
 
 ## Usage
