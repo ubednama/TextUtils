@@ -9,28 +9,9 @@ Remove extra spaces from the text.
 ## Technologies Used
 React: A JavaScript library for building user interfaces.
 JavaScript: A high-level programming language commonly used for web development.
-## Setup
-Clone the repository:
+## Demo
+(Demo)["https://ubednama.github.io/text-utils/]
 
-```bash
-git clone <repository_url>
-```
-Navigate to the project directory:
-
-```bash
-cd TextUtils
-```
-Install dependencies:
-
-```bash
-npm install
-```
-Start the development server:
-
-```bash
-npm start
-```
-Open your web browser and visit http://localhost:3000 to view the application.
 
 ## Usage
 Enter text in the input field.
