@@ -1,12 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 
 export default function Navbar(props) {
   return (
     <nav className={`navbar navbar-${props.mode} navbar-expand-lg bg-${props.mode}`}>
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">{props.title}</a>
+        <p className="navbar-brand">{props.title}</p>
           <div className="form-check form-switch ">
             <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" defaultChecked onClick={props.toggleMode}/>
           </div>

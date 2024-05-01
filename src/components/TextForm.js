@@ -11,7 +11,7 @@ export default function TextForm({heading, myStyle}) {
     
     let words = text.trim().split(/\s+/)
     let wordCount;
-    if(text.split("").length == 0) {
+    if(text.split("").length === 0) {
         wordCount = 0
     } else wordCount = words.length
     
