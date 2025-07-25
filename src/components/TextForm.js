@@ -1,148 +1,192 @@
-import React, { useState } from 'react'
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { 
+  ArrowUp, 
+  ArrowDown, 
+  Eraser, 
+  Copy, 
+  RotateCcw, 
+  Type, 
+  Scissors,
+  Volume2,
+  Download,
+  FileText
+} from "lucide-react";
+import { jsPDF } from "jspdf";
+import { useTheme } from "../context/ThemeContext";
 
+export default function TextForm() {
+  const [text, setText] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
+  const { darkMode } = useTheme();
 
-export default function TextForm({heading, myStyle}) {
-    const [text, setText] = useState("")
-    
-    const filetype = "txt";
-    // const filetype = "pdf";
-    
-    
-    let words = text.trim().split(/\s+/)
-    let wordCount;
-    if(text.split("").length === 0) {
-        wordCount = 0
-    } else wordCount = words.length
-    
+  // Feature functions
+  const handleUppercase = () => setText(text.toUpperCase());
+  const handleLowercase = () => setText(text.toLowerCase());
+  const handleCapitalize = () =>
+    setText(
+      text.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    );
+  const handleClear = () => setText("");
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+  const handleRemoveSpaces = () => setText(text.replace(/\s+/g, " ").trim());
+  const handleReverse = () => setText(text.split("").reverse().join(""));
 
-    const handleUpClick = () => {
-        if (text.trim() !== "") {
-        let newText = text.toUpperCase();
-        setText(newText)
-        toast.success("Text converted to Upper case")}
-        else toast.error("Text field is empty");
+  // Stats
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const charCount = text.length;
+  const sentenceCount = text.split(/[.!?]+/).filter(Boolean).length;
+  // const readingTime = Math.ceil(wordCount / 200);
+
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  const handleSpeak = () => {
+    if (!isSpeaking) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.onend = () => setIsSpeaking(false);
+      speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    } else {
+      speechSynthesis.cancel();
+      setIsSpeaking(false);
     }
+  };
 
-    const handleLoClick = () => {
-        if (text.trim() !== "") {
-        let newText = text.toLowerCase();
-        setText(newText)
-        toast.success("Text converted to Lower case")}
-        else toast.error("Text field is empty");
-    }
+  const handleDownloadText = () => {
+    const element = document.createElement("a");
+    const file = new Blob([text], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "textutils-content.txt";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
 
-    const handleCClick = () => {
-        if (text.trim() !== "") {
-            let newText = text.split(' ');
-            for (let i = 0; i < newText.length; i++) {
-                newText[i] = newText[i][0].toUpperCase() + newText[i].substring(1);
-            }
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text(text, 10, 10);
+    doc.save("textutils-content.pdf");
+  };
 
-            setText(newText.join(' '))
-            toast.success("Input Capitalized")}
-        else toast.error("Text field is empty");
-    }
-
-    const handleCopy = () => {
-        if (text.trim() !== "") {
-        let newText = text;
-        navigator.clipboard.writeText(newText);
-        toast.success("Text Copied")}
-        else toast.error("Text field is empty");
-    }
-
-
-    const handleRemoveExtraSpaces = () => {
-        if (text.trim() !== "") {
-        let newText = text.split(/[ ]+/);
-        setText(newText.join(' '));
-        toast.success("Extra Spaces removed")}
-        else toast.error("Text field is empty");
-    }
-
-    const handleSpeakClick = () => {
-        if (text.trim() !== "") {
-            if ('speechSynthesis' in window) {
-                const message = new SpeechSynthesisUtterance();
-                message.text = text;
-                toast.success("🔊")
-                message.voice = speechSynthesis.getVoices()[0];
-                speechSynthesis.speak(message);
-            } else {
-                toast.error('SpeechSynthesis API is not supported');
-            }}
-        else toast.error("Text field is empty");
-    }
-
-
-    const downloadTextAsFile = () => {
-        if (text.trim() !== "") {
-        const blob = new Blob([text], { type: `text/${filetype}` });
-    
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-    
-        link.download = `${words[0]}.${filetype}`;
-        toast.success("File downloaded")
-        document.body.appendChild(link);
-    
-        link.click();
-        document.body.removeChild(link);}
-        else toast.error("Text field is empty");
-      };
-    
-
-    //clear
-    const handleClClick = () => {
-        if (text.trim() !== "") {
-        let newText = '';
-
-        setText(newText)
-        toast.success("Text cleared")}
-        else toast.error("Text field is empty");
-    }
-
-    
-
-    const handleOnChange = (event) => {
-        setText(event.target.value) //this will update text to value that we have typed.... which we will later used to convert to upperCase
-    }
-    
-
-    const MAX_CHARACTERS = 630; // Set the maximum number of characters
-    const truncatedText = text.length > MAX_CHARACTERS ? text.slice(0, MAX_CHARACTERS) + '...' : text;
-
-    // text will be updated with value of setText
-    /* basically when we have to update value at 'text' we cant do it directly so instead we update value of setText which will update value of 'text' */
-    
-    return (
-    <div style = {myStyle} className='p-5'>
-        <div style={myStyle}>
-            <h3 style={myStyle}>{heading}</h3>
-            <div className="mb-3" style={myStyle}>
-                <textarea className="form-control" id="myBox" cols="" rows="10" value={text} onChange={handleOnChange} placeholder='Enter text here....' style={myStyle} >{text}</textarea>
-            </div>
-            <div className="d-flex justify-content-between" style={myStyle}>
-                <div className="d-flex gap-3">
-                <button className='btn btn-primary' onClick={handleUpClick}>To Uppercase</button>
-                <button className='btn btn-primary' onClick={handleLoClick}>To Lowercase</button>
-                <button className='btn btn-primary' onClick={handleCClick}>Capitialize</button>
-                <button className='btn btn-primary' onClick={handleCopy}>Copy</button>
-                <button className='btn btn-primary' onClick={handleRemoveExtraSpaces}>Fix Space</button>
-                <button className='btn btn-primary' onClick={handleSpeakClick}>🔊</button>
-                <button className='btn btn-primary' onClick={downloadTextAsFile}>⬇️</button>
+  return (
+    <div className="container-fluid px-3 py-2">
+      <div className="row g-3">
+        {/* Text Editor - Main */}
+        <div className="col-lg-9">
+          <div className={`card custom-card h-100 ${darkMode ? "dark-card" : ""}`}>
+            <div className="card-body p-3">
+              <h2 className={`h5 mb-3 ${darkMode ? 'text-light' : 'text-dark'}`}>Text Editor</h2>
+              <textarea
+                className={`form-control custom-textarea ${darkMode ? "dark-textarea" : ""}`}
+                style={{ 
+                  height: "calc(100vh - 280px)",
+                  background: darkMode ? "#1a1a1a" : "#ffffff",
+                  color: darkMode ? "#ffffff" : "#000000"
+                }}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Start typing..."
+              />
+              <div className="d-flex flex-wrap gap-2 mt-3">
+                {/* Primary Actions */}
+                <div className="d-flex gap-2 me-3">
+                  <button className="btn btn-primary px-3 py-2" onClick={handleUppercase}>
+                    <ArrowUp size={16} className="me-1" />UPPER
+                  </button>
+                  <button className="btn btn-primary px-3 py-2" onClick={handleLowercase}>
+                    <ArrowDown size={16} className="me-1" />lower
+                  </button>
+                  <button className="btn btn-primary px-3 py-2" onClick={handleCapitalize}>
+                    <Type size={16} className="me-1" />Title
+                  </button>
                 </div>
-                <button className='btn btn-primary' onClick={handleClClick}>Clear</button>
+                
+                {/* Secondary Actions */}
+                <div className="d-flex gap-2 me-3">
+                  <button className="btn btn-secondary px-3 py-2" onClick={handleRemoveSpaces}>
+                    <Scissors size={16} className="me-1" />Trim
+                  </button>
+                  <button className="btn btn-secondary px-3 py-2" onClick={handleReverse}>
+                    <RotateCcw size={16} className="me-1" />Reverse
+                  </button>
+                </div>
+
+                {/* Utility Actions */}
+                <div className="d-flex gap-2">
+                  <button 
+                    className={`btn ${isSpeaking ? 'btn-warning' : 'btn-info'} px-3 py-2`} 
+                    onClick={handleSpeak}
+                  >
+                    <Volume2 size={16} className="me-1" />
+                    {isSpeaking ? 'Stop' : 'Speak'}
+                  </button>
+                  <button className="btn btn-info px-3 py-2" onClick={handleDownloadText}>
+                    <Download size={16} className="me-1" />Text
+                  </button>
+                  <button className="btn btn-info px-3 py-2" onClick={handleDownloadPDF}>
+                    <FileText size={16} className="me-1" />PDF
+                  </button>
+                  <button className="btn btn-success px-3 py-2" onClick={handleCopy}>
+                    <Copy size={16} className="me-1" />{copySuccess ? 'Copied!' : 'Copy'}
+                  </button>
+                  <button className="btn btn-danger px-3 py-2" onClick={handleClear}>
+                    <Eraser size={16} className="me-1" />Clear
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <div className='mt-4' style={myStyle}>
-            <h5>{wordCount} words and {text.split("").length} letters</h5>
-            <h6>Total duration {Math.round(text.split(" ").length/183)} minutes</h6>
-            <h3 className='pt-2'>Preview</h3>
-            
-            <p>{text.length>0?truncatedText:"Please enter some text"}</p>
+
+        {/* Statistics - Side */}
+        <div className="col-lg-3">
+          <div className={`card custom-card h-100 ${darkMode ? "dark-card" : ""}`}>
+            <div className="card-body p-3">
+              <h5 className={`mb-3 ${darkMode ? 'text-light' : 'text-dark'}`}>Statistics</h5>
+              <div className="statistics-grid">
+                <div className={`stat-box ${darkMode ? 'dark-stat-box' : ''}`}>
+                  <div className="stat-value text-primary">{wordCount}</div>
+                  <div className="stat-label">Words</div>
+                </div>
+                <div className={`stat-box ${darkMode ? 'dark-stat-box' : ''}`}>
+                  <div className="stat-value text-purple">{charCount}</div>
+                  <div className="stat-label">Characters</div>
+                </div>
+                <div className={`stat-box ${darkMode ? 'dark-stat-box' : ''}`}>
+                  <div className="stat-value text-success">{sentenceCount}</div>
+                  <div className="stat-label">Sentences</div>
+                </div>
+                <div className={`stat-box ${darkMode ? 'dark-stat-box' : ''}`}>
+                  <div className="stat-value text-warning">{Math.ceil(wordCount / 200)}</div>
+                  <div className="stat-label">Minutes</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Preview Section */}
+        <div className="col-12">
+          <div className={`card custom-card ${darkMode ? "dark-card" : ""}`}>
+            <div className="card-body p-3">
+              <h5 className={`mb-3 ${darkMode ? 'text-light' : 'text-dark'}`}>Preview</h5>
+              <div 
+                className={`preview-content p-3 rounded ${darkMode ? 'dark-preview' : ''}`}
+                style={{ 
+                  minHeight: "100px",
+                  background: darkMode ? "#1a1a1a" : "#f8f9fa",
+                  color: darkMode ? "#ffffff" : "#000000"
+                }}
+              >
+                {text || <span className="text-muted">Your text preview will appear here...</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

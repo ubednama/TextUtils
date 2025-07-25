@@ -1,29 +1,29 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import { Moon, Sun, TextCursorInput } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
-export default function Navbar(props) {
+export default function Navbar() {
+  const { darkMode, toggleTheme } = useTheme();
+
   return (
-    <nav className={`navbar navbar-${props.mode} navbar-expand-lg bg-${props.mode}`}>
+    <nav className={`navbar navbar-${darkMode ? 'dark' : 'light'} py-2 px-3`}
+         style={{ background: darkMode ? '#000' : '#fff' }}>
       <div className="container-fluid">
-        <p className="navbar-brand">{props.title}</p>
-          <div className="form-check form-switch ">
-            <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" defaultChecked onClick={props.toggleMode}/>
+        <span className="navbar-brand d-flex align-items-center">
+          <div className="rounded bg-primary d-flex align-items-center justify-content-center me-2"
+               style={{ width: 32, height: 32 }}>
+            <TextCursorInput color="white" size={18} />
           </div>
-        </div>
+          <span className={`fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}>
+            TextUtils
+          </span>
+        </span>
+        <button
+          className={`btn btn-sm ${darkMode ? 'btn-dark' : 'btn-light'}`}
+          onClick={toggleTheme}
+        >
+          {darkMode ? <Moon size={18} /> : <Sun size={18} />}
+        </button>
+      </div>
     </nav>
-  )
-}
-
-
-// this will set data type for props
-Navbar.propTypes = {
-    title: PropTypes.string.isRequired,         // will give error if not provided
-    aboutText: PropTypes.string
-}
-
-
-// setting default value for props
-Navbar.defaultProps = {
-    // title: 'Set title here',
-    aboutText: 'About text here'
+  );
 }
